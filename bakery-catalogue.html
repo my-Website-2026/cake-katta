@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Flour & Bloom — Bakery Catalogue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FBF4E8;
+    --paper:#FFFDF7;
+    --cocoa:#3A2417;
+    --cocoa-soft:#6B4A34;
+    --caramel:#C4763A;
+    --berry:#C43B3B;
+    --gold:#E8B94D;
+    --line: rgba(58,36,23,0.14);
+    --shadow: 0 10px 24px rgba(58,36,23,0.10);
+    --radius: 18px;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--cocoa);
+    font-family:'DM Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:'Fraunces', serif; margin:0;}
+  a{color:inherit;}
+  button{font-family:inherit; cursor:pointer;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important; transition:none !important; scroll-behavior:auto !important;}
+  }
+
+  /* ---------- HEADER ---------- */
+  header.site-head{
+    position:sticky; top:0; z-index:50;
+    background:linear-gradient(180deg, var(--cream) 82%, rgba(251,244,232,0));
+    backdrop-filter:blur(6px);
+    padding:14px 16px 6px;
+  }
+  .brand-row{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand-mark{
+    width:42px; height:42px; border-radius:50%;
+    background:var(--cocoa); color:var(--gold);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces',serif; font-weight:700; font-size:19px;
+    flex-shrink:0;
+  }
+  .brand h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; line-height:1;}
+  .brand span.tag{display:block; font-size:11px; font-family:'Space Mono',monospace; color:var(--cocoa-soft); letter-spacing:0.03em; margin-top:3px;}
+  .icon-btn{
+    width:40px; height:40px; border-radius:50%; border:1px solid var(--line);
+    background:var(--paper); display:flex; align-items:center; justify-content:center;
+    transition:transform .15s ease;
+  }
+  .icon-btn:active{transform:scale(0.92);}
+
+  .search-wrap{max-height:0; overflow:hidden; transition:max-height .25s ease;}
+  .search-wrap.open{max-height:60px; margin-top:10px;}
+  .search-wrap input{
+    width:100%; padding:11px 14px; border-radius:12px; border:1px solid var(--line);
+    background:var(--paper); font-family:'DM Sans'; font-size:14px; outline:none;
+  }
+  .search-wrap input:focus{border-color:var(--caramel);}
+
+  /* ---------- TAB NAV ---------- */
+  nav.tabs{
+    position:sticky; top:0; z-index:49;
+    display:flex; gap:6px; padding:10px 16px 12px;
+    background:var(--cream);
+    overflow-x:auto; scrollbar-width:none;
+  }
+  nav.tabs::-webkit-scrollbar{display:none;}
+  .tab-btn{
+    flex-shrink:0;
+    padding:9px 18px; border-radius:999px; border:1px solid var(--line);
+    background:var(--paper); color:var(--cocoa-soft); font-weight:600; font-size:14px;
+    transition:all .18s ease;
+  }
+  .tab-btn.active{
+    background:var(--cocoa); color:var(--cream); border-color:var(--cocoa);
+    box-shadow:0 4px 10px rgba(58,36,23,0.25);
+  }
+  .egg-toggle{
+    margin-left:auto; flex-shrink:0; display:flex; align-items:center; gap:7px;
+    padding:9px 12px 9px 14px; border-radius:999px; border:1px dashed var(--line);
+    font-size:12.5px; color:var(--cocoa-soft); font-weight:600; white-space:nowrap;
+  }
+  .egg-toggle input{accent-color:var(--berry); width:15px; height:15px;}
+
+  /* ---------- HERO ---------- */
+  .hero{padding:8px 16px 22px;}
+  .hero-inner{
+    background:var(--cocoa); color:var(--cream); border-radius:22px; padding:26px 22px;
+    position:relative; overflow:hidden;
+  }
+  .hero-inner::after{
+    content:""; position:absolute; right:-40px; top:-40px; width:160px; height:160px;
+    border-radius:50%; background:radial-gradient(circle, rgba(232,185,77,0.35), transparent 70%);
+  }
+  .hero h2{font-size:clamp(24px,6vw,32px); font-weight:600; line-height:1.15; max-width:300px; position:relative;}
+  .hero h2 em{font-style:normal; color:var(--gold);}
+  .hero p{margin:10px 0 0; font-size:14px; color:rgba(251,244,232,0.75); max-width:320px; position:relative;}
+
+  /* ---------- SECTION LABEL ---------- */
+  .section-label{padding:4px 16px 12px; display:flex; align-items:baseline; justify-content:space-between;}
+  .section-label h3{font-size:20px; font-weight:600;}
+  .section-label span{font-family:'Space Mono',monospace; font-size:11px; color:var(--cocoa-soft);}
+
+  /* ---------- PRODUCT GRID ---------- */
+  .grid{
+    display:grid; grid-template-columns:1fr; gap:20px; padding:0 16px 30px;
+  }
+  @media (min-width:640px){
+    .grid{grid-template-columns:1fr 1fr; gap:18px;}
+  }
+  @media (min-width:1000px){
+    .grid{grid-template-columns:1fr 1fr 1fr;}
+  }
+
+  /* ---------- PRODUCT CARD (bakery ticket) ---------- */
+  .card{
+    background:var(--paper); border-radius:var(--radius); box-shadow:var(--shadow);
+    overflow:hidden; position:relative; border:1px solid rgba(58,36,23,0.06);
+    display:flex; flex-direction:column;
+    animation:riseIn .4s ease both;
+  }
+  @keyframes riseIn{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;}}
+
+  .carousel{position:relative;}
+  .slides{
+    display:flex; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+  }
+  .slides::-webkit-scrollbar{display:none;}
+  .slide{
+    flex:0 0 100%; scroll-snap-align:start; aspect-ratio:4/3;
+    background:linear-gradient(160deg,#F3E7D3,#FBF4E8);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .slide svg{width:78%; height:78%;}
+
+  .slide-arrow{
+    position:absolute; top:50%; transform:translateY(-50%); width:30px; height:30px; border-radius:50%;
+    background:rgba(255,253,247,0.9); border:1px solid var(--line); display:none; align-items:center; justify-content:center;
+    color:var(--cocoa); font-size:14px; z-index:2;
+  }
+  .slide-arrow.prev{left:8px;} .slide-arrow.next{right:8px;}
+  @media (min-width:640px){ .carousel:hover .slide-arrow{display:flex;} }
+
+  .dots{
+    position:absolute; bottom:9px; left:0; right:0; display:flex; justify-content:center; gap:5px;
+  }
+  .dot{width:6px; height:6px; border-radius:50%; background:rgba(58,36,23,0.28); transition:all .2s ease;}
+  .dot.active{background:var(--paper); width:16px; border-radius:4px;}
+
+  .egg-chip{
+    position:absolute; top:10px; left:10px; background:rgba(255,253,247,0.92); color:#3f7a4c;
+    font-family:'Space Mono',monospace; font-size:10px; padding:4px 8px; border-radius:999px;
+    border:1px solid rgba(63,122,76,0.3); z-index:2;
+  }
+
+  .card-body{padding:16px 16px 18px; display:flex; flex-direction:column; gap:9px; flex:1;}
+  .card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .card-name{font-size:17px; font-weight:600; line-height:1.25;}
+  .card-sub{font-size:12px; color:var(--cocoa-soft); margin-top:2px;}
+
+  .price-stamp{
+    flex-shrink:0; width:58px; height:58px; border-radius:50%;
+    border:2px dashed var(--berry); color:var(--berry);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    transform:rotate(6deg); font-family:'Space Mono',monospace;
+  }
+  .price-stamp b{font-size:15px; line-height:1;}
+  .price-stamp small{font-size:8px; letter-spacing:0.03em;}
+
+  .tag-row{display:flex; flex-wrap:wrap; gap:6px;}
+  .chip{
+    font-size:11px; padding:4px 9px; border-radius:999px; background:var(--cream);
+    color:var(--cocoa-soft); border:1px solid var(--line); font-weight:600;
+  }
+  .weight-row{font-family:'Space Mono',monospace; font-size:12px; color:var(--cocoa-soft); display:flex; gap:6px; align-items:center;}
+  .weight-row svg{width:13px; height:13px; opacity:0.6;}
+
+  .empty-state{padding:50px 16px; text-align:center; color:var(--cocoa-soft);}
+  .empty-state h3{margin-bottom:6px;}
+
+  /* ---------- FOOTER ---------- */
+  footer{background:var(--cocoa); color:var(--cream); padding:34px 16px 40px; margin-top:10px;}
+  .foot-grid{display:grid; grid-template-columns:1fr; gap:22px; max-width:960px; margin:0 auto;}
+  @media (min-width:700px){ .foot-grid{grid-template-columns:1.2fr 1fr 1fr;} }
+  footer h4{font-family:'Fraunces',serif; font-size:17px; margin-bottom:10px; color:var(--gold);}
+  footer p, footer a{font-size:13px; color:rgba(251,244,232,0.75); line-height:1.9; text-decoration:none;}
+  .foot-brand{font-family:'Fraunces',serif; font-size:22px; color:var(--cream);}
+  .foot-bottom{text-align:center; font-size:11px; color:rgba(251,244,232,0.4); margin-top:26px; font-family:'Space Mono',monospace;}
+</style>
+</head>
+<body>
+
+<header class="site-head">
+  <div class="brand-row">
+    <div class="brand">
+      <div class="brand-mark">F&B</div>
+      <div>
+        <h1>Flour &amp; Bloom</h1>
+        <span class="tag">FRESH · DAILY · NAGPUR</span>
+      </div>
+    </div>
+    <button class="icon-btn" id="searchToggle" aria-label="Search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    </button>
+  </div>
+  <div class="search-wrap" id="searchWrap">
+    <input type="text" id="searchInput" placeholder="Search cakes, pastries, flavours...">
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button class="tab-btn active" data-cat="all">All</button>
+  <button class="tab-btn" data-cat="cakes">🍰 Cakes</button>
+  <button class="tab-btn" data-cat="pastries">🥐 Pastries</button>
+  <label class="egg-toggle"><input type="checkbox" id="eggFilter"> Eggless only</label>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <h2>Baked this morning, <em>gone by evening.</em></h2>
+    <p>Small-batch cakes and pastries made fresh every day. Browse the menu below — call or visit the shop to order.</p>
+  </div>
+</section>
+
+<div class="section-label">
+  <h3 id="sectionTitle">Full Menu</h3>
+  <span id="sectionCount">9 items</span>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<footer>
+  <div class="foot-grid">
+    <div>
+      <div class="foot-brand">Flour &amp; Bloom</div>
+      <p style="margin-top:8px;">A small neighbourhood bakery in Nagpur, baking cakes and pastries fresh every day since day one.</p>
+    </div>
+    <div>
+      <h4>Visit / Contact</h4>
+      <p>Shop 4, Bakers Lane, Nagpur, Maharashtra</p>
+      <p><a href="tel:+911234567890">+91 12345 67890</a></p>
+      <p><a href="https://wa.me/911234567890" target="_blank" rel="noopener">Chat on WhatsApp</a></p>
+    </div>
+    <div>
+      <h4>Hours</h4>
+      <p>Mon – Sat: 9:00 AM – 9:00 PM</p>
+      <p>Sunday: 10:00 AM – 6:00 PM</p>
+      <p>Custom cakes need 24 hrs notice</p>
+    </div>
+  </div>
+  <div class="foot-bottom">© 2026 Flour &amp; Bloom Bakery — made with butter, sugar and a little bit of code.</div>
+</footer>
+
+<script>
+/* ---------------- ILLUSTRATION ENGINE (no external photos needed) ---------------- */
+function svgWrap(inner){
+  return `<svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
+}
+function shellCake(c1,c2,c3){
+  return `<ellipse cx="150" cy="188" rx="100" ry="11" fill="rgba(58,36,23,0.08)"/>
+  <rect x="65" y="122" width="170" height="58" rx="8" fill="${c1}"/>
+  <path d="M65,122 Q80,104 96,122 Q112,104 128,122 Q144,104 160,122 Q176,104 192,122 Q208,104 224,122 L235,122 L235,136 L65,136 Z" fill="${c2}"/>
+  <circle cx="150" cy="100" r="9" fill="${c3}"/>
+  <path d="M95,155 Q150,145 205,155" stroke="${c2}" stroke-width="4" fill="none" opacity="0.55"/>`;
+}
+function shellCupcake(c1,c2,c3){
+  return `<ellipse cx="150" cy="188" rx="78" ry="10" fill="rgba(58,36,23,0.08)"/>
+  <path d="M110,150 L190,150 L178,190 L122,190 Z" fill="${c3}"/>
+  ${[0,1,2,3,4,5].map(i=>`<line x1="${118+i*11}" y1="152" x2="${112+i*13}" y2="188" stroke="rgba(255,255,255,0.35)" stroke-width="2"/>`).join('')}
+  <path d="M105,150 C105,110 130,88 150,88 C170,88 195,110 195,150 C180,140 165,150 150,140 C135,150 120,140 105,150 Z" fill="${c1}"/>
+  <circle cx="150" cy="86" r="7" fill="${c2}"/>
+  <circle cx="130" cy="118" r="3" fill="${c2}"/><circle cx="170" cy="113" r="3" fill="${c3}"/><circle cx="150" cy="103" r="3" fill="${c2}"/>`;
+}
+function shellCroissant(c1,c2){
+  return `<ellipse cx="150" cy="152" rx="100" ry="11" fill="rgba(58,36,23,0.08)"/>
+  <path d="M60,142 C80,80 120,60 150,65 C180,60 220,80 240,142 C210,122 190,152 165,122 C155,142 145,142 135,122 C110,152 90,122 60,142 Z" fill="${c1}"/>
+  <path d="M75,132 C95,92 125,77 150,80" stroke="${c2}" stroke-width="3" fill="none" opacity="0.6"/>
+  <path d="M225,132 C205,92 175,77 150,80" stroke="${c2}" stroke-width="3" fill="none" opacity="0.6"/>`;
+}
+function shellDonut(c1,c2){
+  const sp=['#fff','#F2C14E','#C43B3B','#6BAA75'];
+  let sprinkles='';
+  for(let i=0;i<8;i++){
+    const a=i*Math.PI/4, x=150+42*Math.cos(a), y=140+42*Math.sin(a);
+    sprinkles+=`<rect x="${x-2}" y="${y-6}" width="4" height="12" rx="2" fill="${sp[i%4]}" transform="rotate(${i*45} ${x} ${y})"/>`;
+  }
+  return `<ellipse cx="150" cy="185" rx="88" ry="10" fill="rgba(58,36,23,0.08)"/>
+  <circle cx="150" cy="140" r="70" fill="${c1}"/>
+  <circle cx="150" cy="140" r="65" fill="${c2}"/>
+  <circle cx="150" cy="140" r="24" fill="#FBF4E8"/>${sprinkles}`;
+}
+function shellTart(c1,c2,c3){
+  let fruit='';
+  for(let i=0;i<5;i++){
+    const a=i*(Math.PI*2/5)-Math.PI/2, x=150+34*Math.cos(a), y=140+34*Math.sin(a);
+    fruit+=`<circle cx="${x}" cy="${y}" r="14" fill="${c3}"/>`;
+  }
+  return `<ellipse cx="150" cy="185" rx="88" ry="10" fill="rgba(58,36,23,0.08)"/>
+  <circle cx="150" cy="140" r="72" fill="${c1}"/>
+  <circle cx="150" cy="140" r="58" fill="${c2}"/>${fruit}
+  <circle cx="150" cy="140" r="10" fill="${c3}" opacity="0.7"/>`;
+}
+function shellMacaron(c1,c2){
+  let tex='';
+  for(let i=0;i<12;i++) tex+=`<rect x="${78+i*11}" y="99" width="6" height="6" rx="2" fill="rgba(255,255,255,0.3)"/>`;
+  return `<ellipse cx="150" cy="167" rx="92" ry="11" fill="rgba(58,36,23,0.08)"/>
+  <ellipse cx="150" cy="120" rx="78" ry="33" fill="${c1}"/>
+  <rect x="74" y="130" width="152" height="17" fill="${c2}"/>
+  <ellipse cx="150" cy="147" rx="78" ry="33" fill="${c1}"/>${tex}`;
+}
+function shellSpiral(c1,c2,c3){
+  return `<ellipse cx="150" cy="185" rx="83" ry="10" fill="rgba(58,36,23,0.08)"/>
+  <circle cx="150" cy="140" r="70" fill="${c1}"/>
+  <path d="M150,140 m0,-50 a50,50 0 1,1 -35,85 a34,34 0 1,1 24,-58 a18,18 0 1,1 -12,30" stroke="${c2}" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <circle cx="150" cy="140" r="10" fill="${c3}"/>`;
+}
+const SHELLS = {
+  cake:(p)=>shellCake(p[0],p[1],p[2]),
+  cupcake:(p)=>shellCupcake(p[0],p[1],p[2]),
+  croissant:(p)=>shellCroissant(p[0],p[1]),
+  donut:(p)=>shellDonut(p[0],p[1]),
+  tart:(p)=>shellTart(p[0],p[1],p[2]),
+  macaron:(p)=>shellMacaron(p[0],p[1]),
+  roll:(p)=>shellSpiral(p[0],p[1],p[2])
+};
+
+/* ---------------- PRODUCT DATA ---------------- */
+const products = [
+  {id:1,name:"Chocolate Truffle Cake",cat:"cakes",price:799,weight:"1 kg",note:"Serves 8–10",tags:["Chocolate","Bestseller"],eggless:true,kind:"cake",photos:[["#5B3A29","#7A5138","#3A2417"],["#4A2F20","#8C5A3C","#C43B3B"]]},
+  {id:2,name:"Red Velvet Cake",cat:"cakes",price:849,weight:"1 kg",note:"Serves 8–10",tags:["Red Velvet","Cream cheese"],eggless:false,kind:"cake",photos:[["#9C2B3A","#F5EDE3","#C43B3B"],["#8C1F30","#FFFDF7","#6B1B26"]]},
+  {id:3,name:"Vanilla Bean Cupcakes",cat:"cakes",price:249,weight:"Box of 6",note:"Kids' favourite",tags:["Vanilla"],eggless:true,kind:"cupcake",photos:[["#F2C14E","#FFF7E0","#E8B94D"],["#E8B94D","#F9E3B6","#C43B3B"]]},
+  {id:4,name:"Rainbow Fruit Cake",cat:"cakes",price:899,weight:"1 kg",note:"Serves 8–10",tags:["Fresh fruit","Whipped cream"],eggless:true,kind:"cake",photos:[["#FFFDF7","#F2C14E","#C43B3B"],["#FDF6E3","#6BAA75","#C43B3B"]]},
+  {id:5,name:"Butter Croissant",cat:"pastries",price:99,weight:"1 pc",note:"Flaky, classic French",tags:["Butter"],eggless:false,kind:"croissant",photos:[["#D9A155","#8C5A2E"],["#C4763A","#6B4A22"]]},
+  {id:6,name:"Glazed Donut",cat:"pastries",price:79,weight:"1 pc",note:"Soft with sprinkles",tags:["Glazed"],eggless:false,kind:"donut",photos:[["#8C5A2E","#F2C14E"],["#6B4A22","#C43B3B"]]},
+  {id:7,name:"Fresh Fruit Tart",cat:"pastries",price:159,weight:"1 pc",note:"Custard + seasonal fruit",tags:["Custard"],eggless:true,kind:"tart",photos:[["#C4763A","#F9E3B6","#C43B3B"],["#8C5A2E","#FFF7E0","#6BAA75"]]},
+  {id:8,name:"Chocolate Danish",cat:"pastries",price:119,weight:"1 pc",note:"Flaky, chocolate-filled",tags:["Chocolate"],eggless:false,kind:"roll",photos:[["#8C5A2E","#5B3A29","#3A2417"]]},
+  {id:9,name:"Almond Macaron",cat:"pastries",price:69,weight:"1 pc",note:"Box of 6 — ₹359",tags:["Almond","Gluten-free"],eggless:true,kind:"macaron",photos:[["#E8B4C8","#C43B3B"],["#B8D8C4","#6BAA75"],["#F2C14E","#C4763A"]]}
+];
+
+/* ---------------- STATE ---------------- */
+let activeCat = "all";
+let eggOnly = false;
+let searchTerm = "";
+
+const grid = document.getElementById('grid');
+const sectionTitle = document.getElementById('sectionTitle');
+const sectionCount = document.getElementById('sectionCount');
+
+function scaleWeightLabel(cat){ return cat==='cakes' ? 'Weight' : 'Qty'; }
+
+function productCard(p){
+  const slides = p.photos.map(pt => `<div class="slide">${svgWrap(SHELLS[p.kind](pt))}</div>`).join('');
+  const dots = p.photos.length > 1 ? `<div class="dots">${p.photos.map((_,i)=>`<span class="dot ${i===0?'active':''}"></span>`).join('')}</div>` : '';
+  const arrows = p.photos.length > 1 ? `<button class="slide-arrow prev" aria-label="Previous photo">‹</button><button class="slide-arrow next" aria-label="Next photo">›</button>` : '';
+  const eggChip = p.eggless ? `<span class="egg-chip">● Eggless</span>` : '';
+
+  return `
+  <article class="card" data-id="${p.id}">
+    <div class="carousel">
+      ${eggChip}
+      <div class="slides">${slides}</div>
+      ${dots}
+      ${arrows}
+    </div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="card-name">${p.name}</div>
+          <div class="card-sub">${p.note}</div>
+        </div>
+        <div class="price-stamp"><b>₹${p.price}</b><small>PRICE</small></div>
+      </div>
+      <div class="weight-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+        ${scaleWeightLabel(p.cat)}: ${p.weight}
+      </div>
+      <div class="tag-row">${p.tags.map(t=>`<span class="chip">${t}</span>`).join('')}</div>
+    </div>
+  </article>`;
+}
+
+function render(){
+  let list = products.filter(p => (activeCat==='all' || p.cat===activeCat) && (!eggOnly || p.eggless));
+  if(searchTerm.trim()){
+    const s = searchTerm.trim().toLowerCase();
+    list = list.filter(p => p.name.toLowerCase().includes(s) || p.tags.some(t=>t.toLowerCase().includes(s)));
+  }
+  sectionTitle.textContent = activeCat === 'all' ? 'Full Menu' : (activeCat === 'cakes' ? 'Cakes' : 'Pastries');
+  sectionCount.textContent = `${list.length} item${list.length!==1?'s':''}`;
+
+  grid.innerHTML = list.length ? list.map(productCard).join('') : `
+    <div class="empty-state" style="grid-column:1/-1;">
+      <h3>Nothing matches yet</h3>
+      <p>Try a different search or clear the eggless filter.</p>
+    </div>`;
+
+  attachCarouselEvents();
+}
+
+function attachCarouselEvents(){
+  document.querySelectorAll('.carousel').forEach(car=>{
+    const slides = car.querySelector('.slides');
+    const dots = car.querySelectorAll('.dot');
+    const prev = car.querySelector('.slide-arrow.prev');
+    const next = car.querySelector('.slide-arrow.next');
+
+    slides.addEventListener('scroll', ()=>{
+      const idx = Math.round(slides.scrollLeft / slides.clientWidth);
+      dots.forEach((d,i)=> d.classList.toggle('active', i===idx));
+    }, {passive:true});
+
+    if(prev) prev.addEventListener('click', ()=> slides.scrollBy({left:-slides.clientWidth, behavior:'smooth'}));
+    if(next) next.addEventListener('click', ()=> slides.scrollBy({left:slides.clientWidth, behavior:'smooth'}));
+  });
+}
+
+/* ---------------- UI WIRING ---------------- */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    activeCat = btn.dataset.cat;
+    render();
+  });
+});
+document.getElementById('eggFilter').addEventListener('change', (e)=>{
+  eggOnly = e.target.checked;
+  render();
+});
+document.getElementById('searchToggle').addEventListener('click', ()=>{
+  const w = document.getElementById('searchWrap');
+  w.classList.toggle('open');
+  if(w.classList.contains('open')) document.getElementById('searchInput').focus();
+});
+document.getElementById('searchInput').addEventListener('input', (e)=>{
+  searchTerm = e.target.value;
+  render();
+});
+
+/* ---------------- INIT ---------------- */
+render();
+</script>
+</body>
+</html>
